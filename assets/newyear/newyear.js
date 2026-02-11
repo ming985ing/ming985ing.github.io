@@ -1,67 +1,76 @@
-(function () {
-  function pad2(n) { return String(n).padStart(2, '0'); }
 
-  function getNextNewYear() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const targetThisYear = new Date(y, 0, 1, 0, 0, 0); // Jan 1
-    // 如果已经过了今年元旦，就倒计时到明年元旦
-    return now >= targetThisYear ? new Date(y + 1, 0, 1, 0, 0, 0) : targetThisYear;
-  }
+function newYear() {
+  if (!document.querySelector('#newYear')) return;
+  // 新年时间戳 and 星期对象
+  let SpringFestival = new Date('2026-02-17 00:00:00')
+  let newYear = SpringFestival.getTime() / 1000,
+    week = { 0: '周日', 1: '周一', 2: '周二', 3: '周三', 4: '周四', 5: '周五', 6: '周六' }
+  function nol(h) { h = Number(h); return h > 9 ? h : '0' + h; }
+  time();
 
-  let timer = null;
+  function time() {
+    // 现在 时间对象
+    let now = new Date();
 
-  function render() {
-    const dEl = document.getElementById('nycd-d');
-    const hEl = document.getElementById('nycd-h');
-    const mEl = document.getElementById('nycd-m');
-    const sEl = document.getElementById('nycd-s');
-    const yEl = document.getElementById('nycd-year');
-    const tipEl = document.getElementById('nycd-tip');
+    // 右下角 今天
+    document.querySelector('#newYear .today').innerHTML = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ' + week[now.getDay()]
 
-    // 不在当前页面（例如某些页面没侧边栏）就不跑
-    if (!dEl || !hEl || !mEl || !sEl || !yEl) return;
+    // 现在与新年相差秒数
+    let second = newYear - Math.round(now.getTime() / 1000);
 
-    const target = getNextNewYear();
-    yEl.textContent = target.getFullYear() + ' 年';
-
-    const now = new Date();
-    let diff = target.getTime() - now.getTime();
-
-    if (diff <= 0) {
-      dEl.textContent = '00';
-      hEl.textContent = '00';
-      mEl.textContent = '00';
-      sEl.textContent = '00';
-      if (tipEl) tipEl.textContent = '新年快乐！🎉';
-      return;
+    // 小于0则表示已经过年
+    if (second < 0) {
+      window.newYearTimer = null
+      document.querySelector('#newYear .title').innerHTML = 'Happy New Year!';
+      document.querySelector('#newYear .newYear-time').innerHTML = '<span class="happyNewYear">新年快乐</span>';
+    } else {
+      // 大于0则还未过年
+      document.querySelector('#newYear .title').innerHTML = '距离' + SpringFestival.getFullYear() + '年春节：'
+      // 大于一天则直接渲染天数
+      if (second > 86400) {
+        document.querySelector('#newYear .newYear-time').innerHTML = `<span class="day">${Math.ceil(second / 86400)}</span><span class="unit">天</span>`
+      } else {
+        // 小于一天则使用时分秒计时。
+        let h = nol(parseInt(second / 3600));
+        second %= 3600;
+        let m = nol(parseInt(second / 60));
+        second %= 60;
+        let s = nol(second);
+        document.querySelector('#newYear .newYear-time').innerHTML = `<span class="time">${h}:${m}:${s}</span></span>`;
+        // 计时
+        if (!window.newYearTimer) window.newYearTimer = setInterval(time, 1000);
+      }
     }
-
-    const sec = Math.floor(diff / 1000);
-    const days = Math.floor(sec / 86400);
-    const hours = Math.floor((sec % 86400) / 3600);
-    const mins = Math.floor((sec % 3600) / 60);
-    const secs = sec % 60;
-
-    dEl.textContent = String(days);
-    hEl.textContent = pad2(hours);
-    mEl.textContent = pad2(mins);
-    sEl.textContent = pad2(secs);
-
-    if (tipEl) tipEl.textContent = '愿你新的一年顺顺利利～';
   }
+}
 
-  function start() {
-    // 防止 PJAX 多次绑定导致多个定时器
-    if (timer) clearInterval(timer);
-    render();
-    timer = setInterval(render, 1000);
+function newYearSwiper() {
+  var swiper = new Swiper('.newYear-slider', {
+    passiveListeners: true,
+    loop: true,
+    // autoplay: false,
+    autoplay: {
+      disableOnInteraction: true,
+      delay: 5000
+    },
+    effect: 'fade',
+    mousewheel: true,
+    autoHeight: true
+  });
+
+  var comtainer = document.querySelector('.newYear-slider');
+  if (comtainer !== null) {
+    comtainer.onmouseenter = () => { swiper.autoplay.stop() };
+    comtainer.onmouseleave = () => { swiper.autoplay.start() };
   }
+}
 
-  // 首次加载
-  document.addEventListener('DOMContentLoaded', start);
+// 适配了pjax
+function whenDOMReady() {
+  // pjax加载完成（切换页面）后需要执行的函数和代码
+  newYear()
+  newYearSwiper()
+}
 
-  // 兼容 Butterfly 的 PJAX 场景：切页后重新启动
-  document.addEventListener('pjax:complete', start);
-  document.addEventListener('pjax:success', start);
-})();
+whenDOMReady() // 打开网站先执行一次
+document.addEventListener("pjax:complete", whenDOMReady) // pjax加载完成（切换页面）后再执行一次
