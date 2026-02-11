@@ -1,0 +1,48 @@
+/* 新年倒计时卡片内部样式 */
+#newyear-countdown .nycd-wrap {
+  padding: 2px 0;
+}
+
+#newyear-countdown .nycd-title {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+#newyear-countdown .nycd-time {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+#newyear-countdown .nycd-item {
+  flex: 1;
+  text-align: center;
+  border-radius: 10px;
+  padding: 8px 6px;
+  background: rgba(0,0,0,0.03);
+}
+
+[data-theme="dark"] #newyear-countdown .nycd-item {
+  background: rgba(255,255,255,0.06);
+}
+
+#newyear-countdown .nycd-item span {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+#newyear-countdown .nycd-item small {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+#newyear-countdown .nycd-tip {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: 0.8;
+}
