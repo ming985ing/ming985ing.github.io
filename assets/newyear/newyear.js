@@ -1,7 +1,7 @@
 
 function newYear() {
   if (!document.querySelector('#newYear')) return;
-  // 新年时间戳 and 星期对象
+  // 新年时间
   let SpringFestival = new Date('2026-02-17 00:00:00')
   let newYear = SpringFestival.getTime() / 1000,
     week = { 0: '周日', 1: '周一', 2: '周二', 3: '周三', 4: '周四', 5: '周五', 6: '周六' }
@@ -9,7 +9,7 @@ function newYear() {
   time();
 
   function time() {
-    // 现在 时间对象
+    // 现在时间
     let now = new Date();
 
     // 右下角 今天
