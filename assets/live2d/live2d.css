@@ -1,0 +1,8 @@
+
+#rightside .rightside-item i {
+  font-size: 1.3rem;
+  color: var(--btn-color);
+}
+#live2d-toggle i {
+  color: #29efc4; /* 自定义颜色 */
+}
